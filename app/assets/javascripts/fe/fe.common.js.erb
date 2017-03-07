@@ -76,7 +76,9 @@ function setUpJsHelpers() {
 		// Calendar
 		setUpCalendars();
 		// ==================
-		$(".tip[title], a[title]").tooltip()
+    // specifying the extra classes now is required because without it tooltip adds
+    // a shadow class by default which makes the tooltips appear semi-transparent
+    $(".tip[title], a[title]").tooltip({ classes: { "ui-tooltip": "ui-corner-all" }})
 }
 
 function fixGridColumnWidths() {
