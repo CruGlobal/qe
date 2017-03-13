@@ -118,10 +118,6 @@ function snapElementProperties(el) {
     $('#panel-properties-element').css({'margin-top': propsTop});
 }
 
-function scrollToElement(id) {
-    $(id).scrollTo();
-}
-
 function addError(id) {
     $('#' + id).addClassName('fieldWithErrors');
 }

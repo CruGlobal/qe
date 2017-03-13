@@ -130,7 +130,7 @@
       //
       if (!isValid && $('#' + this.current_page + "-form").hasClass('enforce-valid-before-next')) {
         // scroll up to where the error is
-        $.scrollTo($(".help-block:visible")[0].closest("li"));
+        scrollTo($(".help-block:visible")[0].closest("li"));
         return;
       }
 
@@ -141,9 +141,9 @@
 
       if (!background_load) { 
         if ($('a[name="main"]').length == 1) {
-          $.scrollTo('a[name="main"]');
+          scrollTo('a[name="main"]');
         } else {
-          $.scrollTo('#main');
+          scrollTo('#main');
         }
       }
 
@@ -474,4 +474,11 @@ function submitToFrame(id, url) {
   $(dom_id + "-spinner").show();
   form.submit();
   return false
+}
+
+function scrollTo(el) {
+  if ($(el).length == 0) { return; }
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 1000);
 }

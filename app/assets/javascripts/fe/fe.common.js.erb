@@ -91,3 +91,10 @@ function fixGridColumnWidths() {
 		}
 	});
 };
+
+function scrollTo(el) {
+  if ($(el).length == 0) { return; }
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 1000);
+}
