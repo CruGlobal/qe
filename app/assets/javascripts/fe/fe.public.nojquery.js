@@ -235,7 +235,8 @@
     captureForm : function(page) {      
       form_el = $('#' + page.attr('id') + '-form');
       if( form_el[0] == null ) return null;
-      return {url: form_el.attr('action'), data: form_el.serialize() + '&answer_sheet_type=' + answer_sheet_type};
+      form_all_el = form_el.find("input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)");
+      return {url: form_el.attr('action'), data: form_all_el.serialize() + '&answer_sheet_type=' + answer_sheet_type};
     },
 
 
