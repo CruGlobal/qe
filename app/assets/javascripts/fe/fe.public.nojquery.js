@@ -12,7 +12,8 @@
 
     $(document).on('click', '.reference_send_invite', function() {
       var el = this;
-      var data = $(el).closest('form').serializeArray();
+      var form_elements = $(el).closest('form').find('input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)');
+      var data = form_elements.serializeArray();
 
       data.push({name: 'answer_sheet_type', value: answer_sheet_type});
       $.ajax({url: $(el).attr('href'), data: data, dataType: 'script',  type: 'POST',
