@@ -16,7 +16,7 @@ gem 'paper_trail', '~> 5.2.3'
 group :development, :test do
   gem 'gettext_i18n_rails', '~> 1.2.3'
   gem 'gettext', '>=3.0.2', :require => false, :group => :development
-  gem 'mysql2', '~> 0.3.18'
+  gem 'mysql2', '~> 0.5.2'
   gem 'pg', '~> 0.18'
   gem 'rb-fsevent', require: false
   gem 'guard-rspec', require: false
