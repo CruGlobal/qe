@@ -16,7 +16,7 @@ module Fe
           when 'html'
             format.html { render html: Liquid::Template.parse(email_template.content).render(template_params) }
           else
-            format.text { render text: Liquid::Template.parse(email_template.content).render(template_params) }
+            format.text { render plain: Liquid::Template.parse(email_template.content).render(template_params) }
           end
         end
         @recipients = p_recipients
