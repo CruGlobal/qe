@@ -4,21 +4,21 @@ module Fe
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_grid,
-               class_name: "Fe::QuestionGrid"
+               optional: true, class_name: "Fe::QuestionGrid"
 
     belongs_to :question_grid_with_total,
-               class_name: "Fe::QuestionGridWithTotal",
+               optional: true, class_name: "Fe::QuestionGridWithTotal",
                foreign_key: "question_grid_id"
 
     belongs_to :choice_field,
-               class_name: "Fe::ChoiceField"
+               optional: true, class_name: "Fe::ChoiceField"
 
     has_many :choice_field_children, foreign_key: 'choice_field_id',
       class_name: 'Fe::Element'
 
-    belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
+    belongs_to :question_sheet, optional: true, :foreign_key => "related_question_sheet_id"
 
-    belongs_to :conditional, polymorphic: true
+    belongs_to :conditional, optional: true, polymorphic: true
 
     self.inheritance_column = :kind
 
@@ -273,7 +273,7 @@ module Fe
 
           if index = page.all_element_ids_arr.index(self.id)
             self.conditional_id = page.all_element_ids_arr[index+1]
-          else 
+          else
             self.conditional_id = nil
           end
         end
@@ -303,7 +303,7 @@ module Fe
       pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
-    # matches in an AND method; if requested we can add a second filter method later 
+    # matches in an AND method; if requested we can add a second filter method later
     # to match on an OR basis
     def matches_filter(filter)
       filter.all? { |method| self.send(method) }

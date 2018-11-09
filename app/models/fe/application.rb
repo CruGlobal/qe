@@ -5,7 +5,7 @@ class Fe::Application < Fe::AnswerSheet
 
   self.table_name = "#{Fe.table_name_prefix}applications"
 
-  belongs_to :applicant, foreign_key: 'person_id', class_name: "Person"
+  belongs_to :applicant, optional: true, foreign_key: 'person_id', class_name: "Person"
   has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
   has_one :answer_sheet_question_sheet, :foreign_key => "answer_sheet_id"
   has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'

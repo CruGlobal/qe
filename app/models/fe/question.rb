@@ -27,6 +27,7 @@ module Fe
              :dependent => :destroy
 
     belongs_to :related_question_sheet,
+               optional: true,
                :class_name => "QuestionSheet",
                :foreign_key => "related_question_sheet_id"
 

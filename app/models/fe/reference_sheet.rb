@@ -23,7 +23,7 @@ module Fe
                :foreign_key => "applicant_answer_sheet_id"
 
     # using belongs_to :question_sheet doesn't work, it uses the Fe::AnswerSheetConcern#question_sheet implementation
-    belongs_to :question_sheet_ref, class_name: 'Fe::QuestionSheet', foreign_key: :question_sheet_id
+    belongs_to :question_sheet_ref, optional: true, class_name: 'Fe::QuestionSheet', foreign_key: :question_sheet_id
 
     validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
     validates :email, :email_format => { :on => :update, :message => "doesn't look right." }
@@ -91,7 +91,7 @@ module Fe
     def computed_visibility_cache_key
       return @computed_visibility_cache_key if @computed_visibility_cache_key
       return nil unless question # keep from crashing for tests
-      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 
+      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids,
                                  answer_sheet_id: applicant_answer_sheet)
       answers.collect(&:cache_key).join('/')
     end
@@ -194,7 +194,7 @@ module Fe
     end
 
     protected
-    
+
     def set_question_sheet
       self.question_sheet_id = question.try(:related_question_sheet_id)
     end
