@@ -35,7 +35,7 @@ module Fe
     validates_format_of :slug, :with => /\A[a-z_][a-z0-9_]*\z/,
                         :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? },
                         :message => 'may only contain lowercase letters, digits and underscores; and cannot begin with a digit.' # enforcing lowercase because javascript is case-sensitive
-    validates_length_of :slug, :in => 4..36,
+    validates_length_of :slug, :in => 4..128,
                         :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? }
 
     validates_each :slug, allow_nil: true, allow_blank: true do |record, attr, value|

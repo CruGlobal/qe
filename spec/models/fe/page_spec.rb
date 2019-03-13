@@ -193,4 +193,11 @@ describe Fe::Page do
       expect(p.complete?(application)).to be(true)
     end
   end
+  context '#hidden' do
+    it 'checks the hidden column' do
+      q = create(:question_sheet)
+      p = create(:page, question_sheet: q, hidden: true)
+      expect(p.hidden).to be true
+    end
+  end
 end

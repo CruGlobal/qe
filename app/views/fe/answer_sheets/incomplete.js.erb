@@ -1,8 +1,11 @@
-if ($('#submit_message').length == 0) {
+if ($('#submit_message, .submit_message').length == 0) {
   $("ul#questions_list").filter(":visible").append("<li><div id=\"submit_message\"></div></li>");
 }
-$('#submit_message').html('<%= escape_javascript(render('incomplete')) %>')
+$('#submit_message, .submit_message').html('<%= escape_javascript(render('incomplete')) %>')
 <% @answer_sheet.pages.each do |page| %>
-  $('#<%= dom_id(@answer_sheet) %>-<%= dom_id(page) %>-li').replaceWith('<%= escape_javascript(render('fe/answer_sheets/page_link', :page_link => @presenter.new_page_link(@answer_sheet, page))) %>')
+  $page = $('<%= escape_javascript(render('fe/answer_sheets/page_link', :page_link => @presenter.new_page_link(@answer_sheet, page))) %>');
+  <% id = "##{dom_id(@answer_sheet)}-#{dom_id(page)}-li" %> 
+  $('<%= id %>').replaceWith($page.find('<%= id %>'));
 <% end %>
-$('#submit_message').show();
+$('#submit_message, .submit_message').show();
+$('#'+fe.pageHandler.current_page+'-li').addClass('active');

@@ -108,4 +108,12 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(ref_sheet.email).to eq('email@email.com')
     end
   end
+  context '#pages' do
+    it 'filters out hidden pages' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      page = create(:page, question_sheet: question_sheet)
+      page2 = create(:page, question_sheet: question_sheet, hidden: true)
+      expect(answer_sheet.pages).to eq([page])
+    end
+  end
 end

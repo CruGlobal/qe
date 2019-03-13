@@ -1,22 +1,25 @@
+<% element_id = attachment_field.id; base_element = "#element_#{element_id}" %>
+
 <% if @presenter %>
   <% if @answer_sheet.frozen? && !@answer_sheet.try(:reference?) %>
     <% answer = attachment_field.responses(@answer_sheet).first %>
     <% if answer %>
       Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
       <%= link_to(image_tag('fe/icons/minus-button.png'),
-                  delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: attachment_field.id),
+                  delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                   method: :delete, remote: true) %>
     <% end %>
   <% else %>
+    <div class="legacy_uploader" style="display: none">
       <div class="uploader">
         <input id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
-        <!-- width: 350px -->
+
         <span id="<%= dom_id(attachment_field) %>_filename">
         <% answer = attachment_field.responses(@answer_sheet).first
           if answer.present? %>
             Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
             <%= link_to(image_tag('fe/icons/minus-button.png'),
-                        delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: attachment_field.id),
+                        delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                         method: :delete, remote: true) %>
           <% end %>
         </span>
@@ -26,7 +29,7 @@
         <% session_key_name = Rails.application.config.session_options[:key] %>
         $('#<%= dom_id(attachment_field) %>_file_uploader').uploadify({
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
-            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => attachment_field.id) %>',
+            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
             fileExt         : '*.*',
             auto            : true,
@@ -48,5 +51,111 @@
             }
         });
       </script>
+    </div>
+
+    <div class="new_uploader">
+
+      <% if answer.present? %>
+        Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+        <%= link_to(image_tag('fe/icons/minus-button.png'),
+                    delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
+                    method: :delete, remote: true, class: 'remove_current') %>
+        <script>
+          $('<%= base_element %> .remove_current').click(function() {
+            $.ajax({
+              type: 'DELETE',
+              url: '<%= delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>',
+              success: function(result) {
+                $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit?answer_sheet_type=<%= @answer_sheet.class.name %>", function(data) {
+                  $('<%= base_element %>').replaceWith($(data).find('<%= base_element %>'))
+                });
+              }
+            });
+            return false;
+          });
+        </script>
+      <% else %>
+
+      <style>
+          .drop_area.file_hover {
+              background:red;
+          }
+
+      </style>
+
+      <input type="file" class="upload_field" />
+      <div class="drop_area" style="margin:20px 0; width:300px; padding:20px; border:1px dashed black;">or drop a file here</div>
+      <div class="progress_report">
+          <div class="progress_report_name"></div>
+          <div class="progress_report_status" style="font-style: italic;"></div>
+          <div class="progress_report_bar_container" style="width: 90%; height: 5px;">
+            <div class="progress_report_bar" style="background-color: blue; width: 0; height: 100%;"></div>
+          </div>
+          <br/>
+      </div>
+      <script type="text/javascript">
+          $(function() {
+
+              var $input = $("<%= base_element %> .upload_field").html5_upload({
+                  url: function(number) {
+                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>";
+                  },
+                  sendBoundary: window.FormData || $.browser.mozilla,
+                  onStart: function(event, total) {
+                    return true;
+                    return confirm("You are trying to upload " + total + " files. Are you sure?");
+                  },
+                  onProgress: function(event, progress, name, number, total) {
+                      console.log(progress, number);
+                  },
+                  setName: function(text) {
+                    $("#element_<%= attachment_field.id %> .progress_report_name").text(text);
+                  },
+                  setStatus: function(text) {
+                    if (!$("<%= base_element %> .upload_field").data('error', true)) {
+                      $("<%= base_element %> .progress_report_status").text(text);
+                    }
+                  },
+                  setProgress: function(val) {
+                    $("<%= base_element %> .progress_report_bar").css('width', Math.ceil(val*100)+"%");
+                  },
+                  onFinishOne: function(event, response, name, number, total) {
+                    // Re-render the attachment file to show the current file; use the page view, which is not the
+                    // most efficient way, but lets us avoid making an action just for this.  And the amount of data
+                    // on a page is not that much
+                    $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit?answer_sheet_type=<%= @answer_sheet.class.name %>", function(data) {
+                      $('<%= base_element %>').replaceWith($(data).find('<%= base_element %>'))
+                    });
+                  },
+                  onError: function(event, name, error) {
+                    $("<%= base_element %> .upload_field").data('error', true)
+                    $('<%= base_element %> .progress_report_status').text('Error while uploading file ' + name)
+                  }, onBrowserIncompatible: function() {
+                    $("<%= base_element %> .legacy_uploader").show();
+                    $("<%= base_element %> .new_uploader").hide();
+                  },
+              });
+
+              // this is absolutely necessary -- see http://weblog.bocoup.com/using-datatransfer-with-jquery-events/
+              $.event.props.push('dataTransfer');
+
+              var $drop = $('<%= base_element %> .drop_area');
+              $drop.on('dragover dragenter', function(e) {
+                  $drop.addClass('file_hover');
+                  return false;
+              }).on('dragleave dragexit', function(e) {
+                  $drop.removeClass('file_hover');
+                  return false;
+              }).on( 'drop', function(e) {
+                  if(e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
+                      $input.trigger('html5_upload.startFromDrop', e );
+                  }
+                  return false;
+              })
+
+          });
+        </script>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

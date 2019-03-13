@@ -107,6 +107,8 @@ module Fe
     end
 
     def hidden?(answer_sheet)
+      return true if hidden
+
       @hidden_cache ||= {}
       return @hidden_cache[answer_sheet] if !@hidden_cache[answer_sheet].nil?
 

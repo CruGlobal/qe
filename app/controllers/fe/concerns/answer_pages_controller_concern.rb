@@ -5,6 +5,7 @@ module Fe::AnswerPagesControllerConcern
     included do
       before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :delete_file, :index]
       before_action :set_quiet_reference_email_change, only: :update
+      skip_before_action :verify_authenticity_token, only: :save_file
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -61,15 +62,16 @@ module Fe::AnswerPagesControllerConcern
 
   def save_file
     params.permit(:Filedata)
+    params.permit(:user_file) # jquery html5 uploader uses user_file; handle both as flash is fallback
 
-    if params[:Filedata]
+    if params[:Filedata] || params[:user_file]
       @page = Fe::Page.find(params[:id])
       @presenter.active_page = @page
       question = Fe::Element.find(params[:question_id])
       answer = Fe::Answer.where(:answer_sheet_id => @answer_sheet.id, :question_id => question.id).first
       question.answers = [answer] if answer
 
-      @answer = question.save_file(@answer_sheet, params[:Filedata])
+      @answer = question.save_file(@answer_sheet, params[:Filedata] || params[:user_file].first)
       set_saved_at_timestamp
 
       render action: :update

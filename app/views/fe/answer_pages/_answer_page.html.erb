@@ -7,7 +7,7 @@
       <%= render "fe/answer_pages/page_name" %>
 
       <% if @elements.length > 0 -%>
-        <%= form_tag @presenter.active_page_link.save_path, :id => "#{page_dom}-form", :onsubmit => "fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", :multipart => true do -%>
+        <%= form_tag @presenter.active_page_link.save_path, :id => "#{page_dom}-form", :autocomplete => 'off', :onsubmit => "fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", :multipart => true do -%>
           <%= hidden_field_tag 'a', params[:a] %>
           <ul class="questions" id="questions_list">
             <% previous_element = nil %>

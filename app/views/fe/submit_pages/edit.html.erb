@@ -8,7 +8,7 @@
   <div id="page-preview">
     <div class="page">
 
-    <%= form_tag fe_application_submit_page_path(@application), :id => "#{page_dom}-form", :onsubmit => "page_handler.validateAll(); return false;" do -%>
+    <%= form_tag fe_application_submit_page_path(@application), :id => "#{page_dom}-form", :autocomplete => 'off', :onsubmit => "page_handler.validateAll(); return false;" do -%>
 
   	<div id="submit_app">
 		<% if @application.frozen? -%>

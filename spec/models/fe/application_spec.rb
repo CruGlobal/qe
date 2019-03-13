@@ -25,6 +25,7 @@ RSpec.describe Fe::Application, :type => :model do
     before do
       @q = create(:question_sheet_with_pages)
       @p = @q.pages.first
+      @p2 = @q.pages.second
 
       @yesno = create(:choice_field_element, required: false, label: 'yesno lvl1 hidden-gridparent') # answered
       @grid = create(:question_grid, choice_field: @yesno, label: 'hidden grid')
@@ -46,7 +47,7 @@ RSpec.describe Fe::Application, :type => :model do
       @p.elements << @yesno2
       @p.elements << @text4
       @p.elements << @text5
-      @p.elements << @text6
+      @p2.elements << @text6
 
       person = create(:fe_person)
       @a = create(:application, applicant_id: person.id)
@@ -78,7 +79,11 @@ RSpec.describe Fe::Application, :type => :model do
     end
     it 'counts all questions, not just required ones, when specified' do
       @a.reload
-      expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 3 txts directly on page)
+      expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 2 txts directly on page, 1 on other page)
+    end
+    it 'supports specifying a page' do
+      @a.reload
+      expect(@a.percent_complete(false, [@p])).to eq(85) # 6 of 7 (2 yes/no + 3 txts within the 1 visible grid + 2 txts directly on page)
     end
   end
 
